@@ -4,6 +4,8 @@ A robust Linux Bash script designed for **NUT (Network UPS Tools)** to manage st
 
 Only tested on Debian and Ubuntu with an USB-connected Eaton 5SC UPS.
 
+![diagram of a typical setup](doc/ups-monitor-overview.png)
+
 ## Features
 
 - **Staged Shutdown Logic**:
@@ -25,8 +27,6 @@ Only tested on Debian and Ubuntu with an USB-connected Eaton 5SC UPS.
 - **Log Management**: Automatically rotates logs monthly and includes a `clean` command to prune old history.
 
 My UPS provides power to some servers/NAS and main switch and wifi access point. This script allows to shutdown early the non-essential devices, and keep the main server live and wifi access to it (by ssh apps on phones and tablets) as long as possible.
-
-![diagram of a typical setup](doc/diagram.png)
 
 ## Prerequisites
 
