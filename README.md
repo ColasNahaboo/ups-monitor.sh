@@ -149,7 +149,7 @@ Example of log:
 2026-02-22 13:34:23 OL CHRG
 ```
 
-Example of email sent for the 2026-02-22 13:33:38 entry above:
+Example of email sent for the 2026-02-22 13:33:38 entry above: (the other ones in the log excerpt do not generate an email)
 ```
 To: root@myserver.mydomain.org
 Subject: Eaton 5SC UPS on mougins: Power lost, battery 100%
