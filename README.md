@@ -91,6 +91,11 @@ You can redefine the battery levels at which you trigger the shutdown of the fir
 
 Note that you can also redefine the functions. For instance, you could redefine `remoteshut` to execute complex exotic actions, or redefine `info` to warn the admin other than by email: a phone message, a sound alarm, ...
 
+After editing this file, always restart the daemon:
+```
+sudo systemctl restart ups-logic.service
+```
+
 #### Shutdown of Windows hosts
 
 The configuration variables `SERVERS_FIRST` and `SERVERS_XTRA` are bash arrays containing a list of hosts. These can be prefixed by the account to log in if it is not root, and also for the case of windows hosts be prefixed by `wh:` to perform an hibernation, or `ws:` for a full poweroff shutdown. E.g:
