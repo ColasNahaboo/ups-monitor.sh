@@ -12,7 +12,7 @@ Only tested on Debian and Ubuntu with an USB-connected Eaton 5SC UPS.
   
   - **80% Battery**: Shuts down "Extra" servers.
   
-  - **20% Battery**: Shuts down the monitoring host itself and puts the UPS into standby to save battery but still be waken up when power returns.
+  - **20% Battery**: Shuts down the monitoring host and places the UPS in standby to conserve battery while ensuring it automatically wakes up when power returns.
 
 - **Configuration File**: Change these (and more) in the optional `/etc/ups-monitor.conf` to override settings without modifying the main script.
 
