@@ -1,0 +1,30 @@
+#!/bin/bash
+
+files='ups-monitor.sh'
+dest=/usr/local/bin
+
+for i in $files; do 
+    grep -q '^#!/bin/bash' "$i" || continue
+    if ! bash -n "$i"; then
+        echo "************ $i: Syntax errors, No installation done" >&2
+        exit 1
+    fi
+    scout=$(shellcheck "$i")
+    if [[ -n "$scout" ]]; then
+        echo "$scout"
+        echo "************ $i: shellcheck warnings, No installation done" >&2
+        exit 2
+    fi
+done
+
+for i in $files; do
+   if [[ -e "$dest/$i" ]]; then
+       if ! cmp -s "$i" "$dest/$i"; then
+           mv "$dest/$i" "$dest/$i.back"
+           cp -va "$i" "$dest/$i"
+       fi
+   else
+       cp -va "$i" "$dest/$i"
+   fi
+done
+
