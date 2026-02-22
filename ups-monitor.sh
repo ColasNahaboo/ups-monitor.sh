@@ -1,7 +1,7 @@
 #!/bin/bash
 # ups-monitor.sh (c)2026 Colas Nahaboo. MIT license.
 # Source: https://github.com/ColasNahaboo/ups-monitor.sh
-export VERSION=1.2.0
+export VERSION=1.2.1
 
 # Monitor UPS. On a power cut event:
 # at 90% battery, shutdown first servers: e.g: store and backup
@@ -147,6 +147,7 @@ while true; do
     if [[ "$STATUS" == OB* ]]; then
         BATT=$(upsc "$UPS_NAME" battery.charge 2>/dev/null)
         if [[ -z "$DOIT" ]]; then
+            POWER_LOST=true
             info "Power lost, battery $BATT%" <<<"Power Lost! Status: $STATUS, Battery: $BATT%"
             DOIT=true
             [[ -e "$NODOIT" ]] && DOIT=false
