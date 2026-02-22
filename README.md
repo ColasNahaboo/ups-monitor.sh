@@ -179,6 +179,7 @@ MIT License - (c) 2026 Colas Nahaboo.
 In a nutshell: do whatever you want with this, and please credit me, but expect no warranty.
 
 ## Release Notes
+- v1.2.1 2026-02-22 Bug fix: no mail was sent when power was back after a cut
 - v1.2.0 2026-02-22 Totally customizable actions via funcname:params pseudo hosts
 - v1.1.1 2026-02-22 Typo fixed for windows hosts
 - v1.1.0 2026-02-22 Built-in way to shutdown or hibernate Windows hosts
