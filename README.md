@@ -106,7 +106,7 @@ The windows machines must have the OpenSSH server installed, and configured to b
 
 #### Other actions
 
-You can extend the type of actions done by writing "pseudo servers" in the `SERVERS_FIRST` and `SERVERS_XTRA` in the form of `funcname:params`. Then instead of performing a shutdown via ssh, the script will thus just the bash function `funcname` with the parameters `params`. Although `params` must not contain spaces, You can pass multiple params by separating them with commas.
+You can extend the type of actions done by writing "pseudo servers" in the `SERVERS_FIRST` and `SERVERS_XTRA` in the form of `funcname:params`. Then instead of performing a shutdown via ssh, the script will thus just execute the bash function `funcname` — that you must define also in the config file — with the parameters `params`. You can pass multiple parameters by separating them with commas in the `params` string.
 
 Example of contents of `/etc/ups-monitor.conf`:
 ```bash
@@ -119,7 +119,7 @@ backup-databases(){
 
 #### Limitations
 
-Currently, the script only performs actions at three battery levels, the ones defined for fist, xtra and self levels. Implementing a flexible number of these levels could be possible, but I do not think there is an actual use case requiring adding this feature, which would significantly increase the script's complexity, making it more error-prone and difficult to maintain. But I am open to consider actual use cases.
+Currently, the script only performs actions at three battery levels, the ones defined for fist, xtra and self levels. Implementing a customizable number of these levels could be possible, but I do not think there is an actual use case requiring adding this feature, which would significantly increase the script's complexity, making it more error-prone and difficult to maintain. But I am open to consider actual use cases.
 
 ### Upgrade
 
