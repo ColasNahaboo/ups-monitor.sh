@@ -1,7 +1,7 @@
 #!/bin/bash
 # ups-monitor.sh (c)2026 Colas Nahaboo. MIT license.
 # Source: https://github.com/ColasNahaboo/ups-monitor.sh
-export VERSION=1.1.0
+export VERSION=1.1.1
 
 # Monitor UPS. On a power cut event:
 # at 90% battery, shutdown first servers: e.g: store and backup
@@ -68,8 +68,10 @@ remoteshut(){
     $DOIT && for host in "$@"; do
         if [[ $host =~ ^wh:(.*)$ ]]; then
             shutcom="shutdown /h"
+            host="${BASH_REMATCH[1]}"
         elif [[ $host =~ ^ws:(.*)$ ]]; then
             shutcom="shutdown /s /t 0"
+            host="${BASH_REMATCH[1]}"
         fi
         ssh -t -o "$SSHTO" "$host" "$shutcom"&
     done

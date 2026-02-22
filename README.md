@@ -136,5 +136,6 @@ In a nutshell: do whatever you want with this, and please credit me, but expect 
 
 ## Release Notes
 
+- v1.1.1 2026-02-22 Typo fixed for windows hosts
 - v1.1.0 2026-02-22 Built-in way to shutdown or hibernate Windows hosts
 - v1.0.0 2026-02-22 First public release
