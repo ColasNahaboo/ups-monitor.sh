@@ -89,8 +89,7 @@ My UPS provides power to some servers/NAS and main switch and wifi access point.
 
 You can redefine the battery levels at which you trigger the shutdown of the first and xtra servers, and the names of these servers.
 
-Note that you can also redefine the functions. For instance, you could redefine `remoteshut` to execute an action other than a mere shutdown via ssh, for instance if you must shutdown a NAS with a call to its API via `curl`, or a Windows machine with a specific protocol.
-Or redefine `info` to warn the admin other than by email: a phone message, a sound alarm, ...
+Note that you can also redefine the functions. For instance, you could redefine `remoteshut` to execute complex exotic actions, or redefine `info` to warn the admin other than by email: a phone message, a sound alarm, ...
 
 #### Shutdown of Windows hosts
 
@@ -113,6 +112,10 @@ backup-databases(){
 }
 ```
 
+#### Limitations
+
+Currently, the script only performs actions at three battery levels, the ones defined for fist, xtra and self levels. Implementing a flexible number of these levels could be possible, but I do not think there is an actual use case requiring adding this feature, which would significantly increase the script's complexity, making it more error-prone and difficult to maintain. But I am open to consider actual use cases.
+
 ### Upgrade
 
 If a new version is published, just:
@@ -130,12 +133,35 @@ And of course check the Release Notes at the end of this README to check if any 
 
 The script maintains two types of logs in `/var/log/ups-monitor/`:
 
-- `YYYY-MM.log`: A chronological history of every status change and action taken.
 - `last.status`: A snapshot of the full UPS status output the last time an alert was triggered.
+- `YYYY-MM.log`: A chronological history of every status change and action taken (the subjects of the sent emails).
+
+Example of log:
+```
+2026-02-22 10:12:05 OL CHRG
+2026-02-22 10:26:10 OL CHRG TRIM input: 238.0V
+2026-02-22 10:29:01 OL CHRG
+2026-02-22 11:12:19 OL CHRG TRIM input: 240.2V
+2026-02-22 13:22:27 OL CHRG
+2026-02-22 13:33:38 OB DISCHRG
+2026-02-22 13:33:38 Power lost, battery 100%
+2026-02-22 13:34:18 OL DISCHRG
+2026-02-22 13:34:23 OL CHRG
+```
+
+Example of email sent for the 2026-02-22 13:33:38 entry above:
+```
+To: root@myserver.mydomain.org
+Subject: Eaton 5SC UPS on mougins: Power lost, battery 100%
+Date: Sun, 22 Feb 2026 13:33:38 +0100 (CET)
+From: root <root@myserver.mydomain.org>
+
+Power Lost! Status: OB DISCHRG, Battery: 100%
+```
 
 ## Testing
 
-To test your logic without actually shutting down your infrastructure, with the servioce running:
+To test your logic without actually shutting down your infrastructure, with the service running:
 
 1. Run `touch /tmp/NOUPSMON`. Creating this file will dynamically switch the script in "dry run" mode without the need to restart it.
 2. Unplug your UPS.
