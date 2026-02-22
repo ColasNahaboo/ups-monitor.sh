@@ -58,7 +58,7 @@ My UPS provides power to some servers/NAS and main switch and wifi access point.
    ```
 3. Setup Systemd Service:
    Create `/etc/systemd/system/ups-logic.service` containing:
-   ```TOML
+   ```ini
    [Unit]
    Description=UPS Monitoring and Staged Shutdown Logic
    After=nut-server.service
