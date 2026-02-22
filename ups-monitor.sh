@@ -1,7 +1,7 @@
 #!/bin/bash
 # ups-monitor.sh (c)2026 Colas Nahaboo. MIT license.
 # Source: https://github.com/ColasNahaboo/ups-monitor.sh
-export VERSION=1.0.0
+export VERSION=1.1.0
 
 # Monitor UPS. On a power cut event:
 # at 90% battery, shutdown first servers: e.g: store and backup
@@ -31,7 +31,8 @@ LOW_BATT_XTRA=80
 LOW_BATT_SELF=20
 # servers names to shutdown when thresholds reached. Bash arrays.
 # Can be empty (), one server (foo), or many (foo bar gee)
-SERVERS_FIRST=(store backup)
+
+SERVERS_FIRST=(store backup wh:colas@games)
 SERVERS_XTRA=(colas)
 
 CHECK_DELAY=5                   # 5s is the sweet spot. Do not go higher.
@@ -58,10 +59,19 @@ resetvars(){
 }
 
 # non-blocking remote shutdown of servers in arguments.
+# servers can be host names or user@host
 # Must be able to ssh to them as root without a password
+# for windows servers, prefix the name by wh: (hibernate) or ws: (shutdown)
+# e.g: wh:colas@games
 remoteshut(){
+    local shutcom="sudo shutdown -h now"
     $DOIT && for host in "$@"; do
-        ssh -t -o "$SSHTO" "$host" "sudo shutdown -h now"&
+        if [[ $host =~ ^wh:(.*)$ ]]; then
+            shutcom="shutdown /h"
+        elif [[ $host =~ ^ws:(.*)$ ]]; then
+            shutcom="shutdown /s /t 0"
+        fi
+        ssh -t -o "$SSHTO" "$host" "$shutcom"&
     done
 }
 

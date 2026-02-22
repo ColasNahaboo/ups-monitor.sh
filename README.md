@@ -92,6 +92,14 @@ You can redefine the battery levels at which you trigger the shutdown of the fir
 Note that you can also redefine the functions. For instance, you could redefine `remoteshut` to execute an action other than a mere shutdown via ssh, for instance if you must shutdown a NAS with a call to its API via `curl`, or a Windows machine with a specific protocol.
 Or redefine `info` to warn the admin other than by email: a phone message, a sound alarm, ...
 
+#### Shutdown of Windows hosts
+
+The configuration variables `SERVERS_FIRST` and `SERVERS_XTRA` are bash arrays containing a list of hosts. These can be prefixed by the account to log in if it is not root, and also for the case of windows hosts be prefixed by `wh:` to perform an hibernation, or `ws:` for a full poweroff shutdown. E.g:
+```bash
+SERVERS_FIRST=(store root2@backup wh:colas@games ws:anne@nas)
+```
+The windows machines must have the OpenSSH server installed, and configured to be able to connect to an administrator account without a password. See [Installing and Enabling OpenSSH on Windows](https://docs.ssw.splashtop.com/docs/installing-and-enabling-openssh-on-windows).
+
 ### Upgrade
 
 If a new version is published, just:
@@ -128,4 +136,5 @@ In a nutshell: do whatever you want with this, and please credit me, but expect 
 
 ## Release Notes
 
+- v1.1.0 2026-02-22 Built-in way to shutdown or hibernate Windows hosts
 - v1.0.0 2026-02-22 First public release
