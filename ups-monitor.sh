@@ -1,7 +1,7 @@
 #!/bin/bash
 # ups-monitor.sh (c)2026 Colas Nahaboo. MIT license.
 # Source: https://github.com/ColasNahaboo/ups-monitor.sh
-export VERSION=1.1.1
+export VERSION=1.2.0
 
 # Monitor UPS. On a power cut event:
 # at 90% battery, shutdown first servers: e.g: store and backup
@@ -63,8 +63,9 @@ resetvars(){
 # Must be able to ssh to them as root without a password
 # for windows servers, prefix the name by wh: (hibernate) or ws: (shutdown)
 # e.g: wh:colas@games
+# Or your-bash-function:comma,separated,params
 remoteshut(){
-    local shutcom="sudo shutdown -h now"
+    local shutcom="sudo shutdown -h now" params
     $DOIT && for host in "$@"; do
         if [[ $host =~ ^wh:(.*)$ ]]; then
             shutcom="shutdown /h"
@@ -72,6 +73,10 @@ remoteshut(){
         elif [[ $host =~ ^ws:(.*)$ ]]; then
             shutcom="shutdown /s /t 0"
             host="${BASH_REMATCH[1]}"
+        elif  [[ $host =~ ^([-[:alnum:]]+):(.*)$ ]]; then
+            IFS=',' read -ra params <<<"${BASH_REMATCH[2]}"
+            "${BASH_REMATCH[1]}" "${params[@]}"
+            continue
         fi
         ssh -t -o "$SSHTO" "$host" "$shutcom"&
     done

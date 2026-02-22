@@ -100,6 +100,19 @@ SERVERS_FIRST=(store root2@backup wh:colas@games ws:anne@nas)
 ```
 The windows machines must have the OpenSSH server installed, and configured to be able to connect to an administrator account without a password. See [Installing and Enabling OpenSSH on Windows](https://docs.ssw.splashtop.com/docs/installing-and-enabling-openssh-on-windows).
 
+#### Other actions
+
+You can extend the type of actions done by writing "pseudo servers" in the `SERVERS_FIRST` and `SERVERS_XTRA` in the form of `funcname:params`. Then instead of performing a shutdown via ssh, the script will thus just the bash function `funcname` with the parameters `params`. Although `params` must not contain spaces, You can pass multiple params by separating them with commas.
+
+Example of contents of `/etc/ups-monitor.conf`:
+```bash
+SERVERS_FIRST=(nas backup-databases:dbuser,mbase,pbase)
+backup-databases(){
+    mysqldump -u "$1" -p "$2" > /var/tmpbackup_mysql.sql
+    pg_dump -U "$1" "$3" > /var/tmp/backup_postgres.sql
+}
+```
+
 ### Upgrade
 
 If a new version is published, just:
@@ -135,7 +148,7 @@ MIT License - (c) 2026 Colas Nahaboo.
 In a nutshell: do whatever you want with this, and please credit me, but expect no warranty.
 
 ## Release Notes
-
+- v1.2.0 2026-02-22 Totally customizable actions via funcname:params pseudo hosts
 - v1.1.1 2026-02-22 Typo fixed for windows hosts
 - v1.1.0 2026-02-22 Built-in way to shutdown or hibernate Windows hosts
 - v1.0.0 2026-02-22 First public release
