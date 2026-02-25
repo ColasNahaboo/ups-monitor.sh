@@ -72,7 +72,7 @@ My UPS provides power to some servers/NAS and main switch and wifi access point.
    WantedBy=multi-user.target
    ```
 4. Setup your local **configuration**:
-   create and edit `/etc/ups-monitor.conf` to customize your setup. You can use the provided `ups-monitor-sample.conf` as a guide, and also see the Configuration section below.
+   create and edit `/etc/ups-monitor.conf` to customize your setup. You can use the provided `doc/ups-monitor-sample.conf` as a guide, and also see the Configuration section below.
 5. Enable and start:
    ```bash
    sudo systemctl enable --now ups-logic.service
