@@ -96,11 +96,16 @@ After editing this file, always restart the daemon:
 sudo systemctl restart ups-logic.service
 ```
 
-#### Shutdown of Windows hosts
+#### Shutdown options
 
-The configuration variables `SERVERS_FIRST` and `SERVERS_XTRA` are bash arrays containing a list of hosts. These can be prefixed by the account to log in if it is not root, and also for the case of windows hosts be prefixed by `wh:` to perform an hibernation, or `ws:` for a full poweroff shutdown. E.g:
+The configuration variables `SERVERS_FIRST` and `SERVERS_XTRA` are bash arrays containing a list of hosts. These can be prefixed by the account to log in if it is not root, and also be prefixed by h: to perform an hibernate action instead:
+- `myserver` will shutdown the host named "myserver"
+- `h:myserver` will first attempt to hibernate the linux server, but revert to a shutdown if the hibernation command fails
+
+For windows hosts, prefix them by `wh:` to perform an hibernation (or a shutdown if hibernation fails), or `ws:` for a full poweroff shutdown. E.g:
+
 ```bash
-SERVERS_FIRST=(store root2@backup wh:colas@games ws:anne@nas)
+SERVERS_FIRST=(store root2@backup h:steam wh:colas@games ws:anne@nas)
 ```
 The windows machines must have the OpenSSH server installed, and configured to be able to connect to an administrator account without a password. See [Installing and Enabling OpenSSH on Windows](https://docs.ssw.splashtop.com/docs/installing-and-enabling-openssh-on-windows).
 
@@ -119,7 +124,7 @@ backup-databases(){
 
 #### Limitations
 
-Currently, the script only performs actions at three battery levels, the ones defined for fist, xtra and self levels. Implementing a customizable number of these levels could be possible, but I do not think there is an actual use case requiring adding this feature, which would significantly increase the script's complexity, making it more error-prone and difficult to maintain. But I am open to consider actual use cases.
+Currently, the script only performs actions at three battery levels: first, extra, and self. While it is possible to implement a customizable number of levels, I don't believe there is a practical use case for this feature. Adding it would significantly increase the script's complexity, making it more error-prone and difficult to maintain. However, I am open to considering it if a real-world need arises—please open an issue if you have one.
 
 ### Upgrade
 
@@ -179,6 +184,9 @@ MIT License - (c) 2026 Colas Nahaboo.
 In a nutshell: do whatever you want with this, and please credit me, but expect no warranty.
 
 ## Release Notes
+- v1.3.0 2026-02-25 h: prefix allows to hibernate linux hosts
+  Status changes between OL CHRG OVER and OL CHRG are not logged anymore
+  Log a specific entry when starting, with the version number
 - v1.2.1 2026-02-22 Bug fix: no mail was sent when power was back after a cut
 - v1.2.0 2026-02-22 Totally customizable actions via funcname:params pseudo hosts
 - v1.1.1 2026-02-22 Typo fixed for windows hosts

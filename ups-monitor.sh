@@ -1,7 +1,8 @@
 #!/bin/bash
 # ups-monitor.sh (c)2026 Colas Nahaboo. MIT license.
 # Source: https://github.com/ColasNahaboo/ups-monitor.sh
-export VERSION=1.2.1
+# shellcheck disable=SC2155
+export VERSION=1.3.0
 
 # Monitor UPS. On a power cut event:
 # at 90% battery, shutdown first servers: e.g: store and backup
@@ -61,17 +62,21 @@ resetvars(){
 # non-blocking remote shutdown of servers in arguments.
 # servers can be host names or user@host
 # Must be able to ssh to them as root without a password
+# prefix with h: for hibernate, e.g: h:myserver
 # for windows servers, prefix the name by wh: (hibernate) or ws: (shutdown)
 # e.g: wh:colas@games
 # Or your-bash-function:comma,separated,params
 remoteshut(){
-    local shutcom="sudo shutdown -h now" params
+    local shutcom="shutdown -h now" params
     $DOIT && for host in "$@"; do
-        if [[ $host =~ ^wh:(.*)$ ]]; then
-            shutcom="shutdown /h"
+        if [[ $host =~ ^h:(.*)$ ]]; then
+            shutcom="systemctl hibernate || shutdown -h now"
+            host="${BASH_REMATCH[1]}"
+        elif [[ $host =~ ^wh:(.*)$ ]]; then
+            shutcom="shutdown /h || shutdown /s /f /t 0"
             host="${BASH_REMATCH[1]}"
         elif [[ $host =~ ^ws:(.*)$ ]]; then
-            shutcom="shutdown /s /t 0"
+            shutcom="shutdown /s /f /t 0"
             host="${BASH_REMATCH[1]}"
         elif  [[ $host =~ ^([-[:alnum:]]+):(.*)$ ]]; then
             IFS=',' read -ra params <<<"${BASH_REMATCH[2]}"
@@ -84,9 +89,13 @@ remoteshut(){
 
 # email message to the admin (stdin as body, args as subject), and log subject
 info(){
-    local isodate
+    local isodate=$(date '+%Y-%m-%d %H:%M:%S')
     mail -s "$UPS_DESC: $*" $MAILTO
-    isodate=$(date '+%Y-%m-%d %H:%M:%S')
+    echo "$isodate $*" >>"$LOG/$(date +%Y-%m).log"
+}
+
+log(){
+    local isodate=$(date '+%Y-%m-%d %H:%M:%S')
     echo "$isodate $*" >>"$LOG/$(date +%Y-%m).log"
 }
 
@@ -109,6 +118,9 @@ if [[ "$1" == clean ]]; then
     exit 0
 fi
 
+PREV_STATUS="OL CHRG"           # avoid creating a log entry if UPS is OK
+log "STARTING ups-monitor.sh v$VERSION"
+
 # Main infinite loop
 while true; do
     # Get UPS Status and Battery Level
@@ -126,6 +138,8 @@ while true; do
         sleep 2
     done
     STATUS="$RAW_STATUS"
+    # Ignore OVER in this case, normal operation, avoid irrelevant log entries
+    [[ "$STATUS" == "OL CHRG OVER" ]] && STATUS="OL CHRG"
     # log any status changes, record values of over- and under- voltages 
     if [[ "$STATUS" != "$PREV_RAW_STATUS" ]]; then
         # Trim / boost are no actual problems, but log them just for info
@@ -134,8 +148,7 @@ while true; do
         else
             voltage=
         fi
-        isodate=$(date '+%Y-%m-%d %H:%M:%S')
-        echo "$isodate $STATUS$voltage" >>"$LOG/$(date +%Y-%m).log"
+        log "$STATUS$voltage"
         PREV_RAW_STATUS="$STATUS"
     fi
     # check if battery flagged as "To Replace" internally by the UPS. Just warn
