@@ -2,7 +2,7 @@
 # ups-monitor.sh (c)2026 Colas Nahaboo. MIT license.
 # Source: https://github.com/ColasNahaboo/ups-monitor.sh
 # shellcheck disable=SC2155
-export VERSION=1.3.0
+export VERSION=1.3.1
 
 # Monitor UPS. On a power cut event:
 # at 90% battery, shutdown first servers: e.g: store and backup
@@ -51,12 +51,13 @@ KEEP_LOGS=365                   # remove logs older than KEEP_LOGS days
 # once the power is back, reset to a "normal" state of the variables
 resetvars(){
     DOIT=                       # can be empty(undefined) / true / false
+    PREV_STATUS=                # previous value of STATUS
     POWER_LOST=false            # booleans: true/false
     FIRST_DONE=false
     XTRA_DONE=false
     BATT_DONE=false
     STALE_DONE=false
-    PREV_STATUS=                # previous value of STATUS
+    OVER_DONE=false
 }
 
 # non-blocking remote shutdown of servers in arguments.
@@ -208,9 +209,18 @@ while true; do
             upsc "$UPS_NAME" 2>/dev/null >$LOG/last.status
             resetvars
         fi
+        # sub-states of OL
+        if [[ "$STATUS" == OL*OFF* ]]; then # no connected servers, ignore
+            :
+        elif [[ "$STATUS" == OL*OVER* ]]; then # too much demanded power
+            OVERLOAD=$(upsc "$UPS_NAME" ups.load 2>/dev/null)
+            if ! $OVER_DONE; then
+                info "UPS overloaded at $OVERLOAD!" <<<'Please remove equipments'
+                OVER_DONE=true
+            fi
+            log "$STATUS at $OVERLOAD"
+        fi
     elif [[ "$STATUS" == WAIT* ]]; then # busy self-test, ignore
-        :
-    elif [[ "$STATUS" == OL*OFF* ]]; then # no connect servers, ignore
         :
     else
         if [[ "$STATUS" != "$PREV_STATUS" ]]; then
