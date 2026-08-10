@@ -184,6 +184,7 @@ MIT License - (c) 2026 Colas Nahaboo.
 In a nutshell: do whatever you want with this, and please credit me, but expect no warranty.
 
 ## Release Notes
+- v1.3.2 2026-08-10 wait 10s for the last email to get out before shutting down self.
 - v1.3.1 2026-02-26 email (once) when UPS is overloaded, and overload values logged
 - v1.3.0 2026-02-25 h: prefix allows to hibernate linux hosts
   Status changes between OL CHRG OVER and OL CHRG are not logged anymore

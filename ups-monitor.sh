@@ -2,7 +2,7 @@
 # ups-monitor.sh (c)2026 Colas Nahaboo. MIT license.
 # Source: https://github.com/ColasNahaboo/ups-monitor.sh
 # shellcheck disable=SC2155
-export VERSION=1.3.1
+export VERSION=1.3.2
 
 # Monitor UPS. On a power cut event:
 # at 90% battery, shutdown first servers: e.g: store and backup
@@ -188,6 +188,8 @@ while true; do
         # 3. ALL shutdown if battery % is low or the LB (Low Battery) status
         if (( BATT < LOW_BATT_SELF ))  || [[ "$STATUS" == *' LB'* ]]; then
             info "Shutting down $HOSTNAME, and putting the UPS in standby" <<<"Battery=$BATT% < ${LOW_BATT_SELF}% ==> Final shutdown sequence..."
+            sleep 10            # let the email get out
+            sync
             # Kill UPS power and shutdown this local host
             # Note that the UPS will wait 30s before actually shutting down
             $DOIT && upscmd -u admin -p "$UPS_ADMIN_PASS" "$UPS_NAME" shutdown.return
