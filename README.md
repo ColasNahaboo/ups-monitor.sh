@@ -57,7 +57,7 @@ My UPS provides power to some servers/NAS and main switch and wifi access point.
    cp ups-monitor.sh /usr/local/bin/ups-monitor.sh
    ```
 3. Setup Systemd Service:
-   Create `/etc/systemd/system/ups-logic.service` containing:
+   Create `/etc/systemd/system/ups-monitor.service` containing:
    ```ini
    [Unit]
    Description=UPS Monitoring and Staged Shutdown Logic
@@ -75,7 +75,7 @@ My UPS provides power to some servers/NAS and main switch and wifi access point.
    create and edit `/etc/ups-monitor.conf` to customize your setup. You can use the provided `doc/ups-monitor-sample.conf` as a guide, and also see the Configuration section below.
 5. Enable and start:
    ```bash
-   sudo systemctl enable --now ups-logic.service
+   sudo systemctl enable --now ups-monitor.service
    ```
 6. Setup Daily Cleanup:
    Add this to your root crontab (`sudo crontab -e`) to delete logs in `/var/log/ups-monitor/` older than a year and keep a copy of the UPS complete state at the beginning of the day for reference:
@@ -93,7 +93,7 @@ Note that you can also redefine the functions. For instance, you could redefine 
 
 After editing this file, always restart the daemon:
 ```
-sudo systemctl restart ups-logic.service
+sudo systemctl restart ups-monitor.service
 ```
 
 #### Shutdown options
@@ -134,7 +134,7 @@ If a new version is published, just:
 # download and copy the new ups-monitor.sh
 cp ups-monitor.sh /usr/local/bin/ups-monitor.sh
 # restart the service
-sudo systemctl restart ups-logic.service
+sudo systemctl restart ups-monitor.service
 ```
 
 And of course check the Release Notes at the end of this README to check if any manual action is required for the upgrade.
